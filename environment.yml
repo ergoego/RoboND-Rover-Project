@@ -1,4 +1,4 @@
-name: RoboND36
+name: Sample-Search-And-Retrieve
 channels:
     - https://conda.anaconda.org/menpo
     - conda-forge
