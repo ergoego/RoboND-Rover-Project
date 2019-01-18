@@ -1,54 +1,135 @@
-[//]: # (Image References)
-[image_0]: ./misc/rover_image.jpg
-[![Udacity - Robotics NanoDegree Program](https://s3-us-west-1.amazonaws.com/udacity-robotics/Extra+Images/RoboND_flag.png)](https://www.udacity.com/robotics)
 # Search and Sample Return Project
 
+This project is modeled after the [NASA sample return challenge](https://www.nasa.gov/directorates/spacetech/centennial_challenges/sample_return_robot/index.html) and forked from Udacity's Robotics Nanodegree program, project 1. 
 
-![alt text][image_0] 
-
-This project is modeled after the [NASA sample return challenge](https://www.nasa.gov/directorates/spacetech/centennial_challenges/sample_return_robot/index.html) and it will give you first hand experience with the three essential elements of robotics, which are perception, decision making and actuation.  You will carry out this project in a simulator environment built with the Unity game engine.  
+My plan for this repository is for fulfillment of the challenge, and then further forking to create a dog-excrement search and retreival bot for my back yard. 
 
 ## The Simulator
 The first step is to download the simulator build that's appropriate for your operating system.  Here are the links for [Linux](https://s3-us-west-1.amazonaws.com/udacity-robotics/Rover+Unity+Sims/Linux_Roversim.zip), [Mac](	https://s3-us-west-1.amazonaws.com/udacity-robotics/Rover+Unity+Sims/Mac_Roversim.zip), or [Windows](https://s3-us-west-1.amazonaws.com/udacity-robotics/Rover+Unity+Sims/Windows_Roversim.zip).  
 
 You can test out the simulator by opening it up and choosing "Training Mode".  Use the mouse or keyboard to navigate around the environment and see how it looks.
 
-## Dependencies
-You'll need Python 3 and Jupyter Notebooks installed to do this project.  The best way to get setup with these if you are not already is to use Anaconda following along with the [RoboND-Python-Starterkit](https://github.com/ryan-keenan/RoboND-Python-Starterkit). 
+## Installing Anaconda, creating runtime environment, and executing
 
+## Overview
+Using Anaconda consists of the following:
 
-Here is a great link for learning more about [Anaconda and Jupyter Notebooks](https://classroom.udacity.com/courses/ud1111)
+1. Install [`miniconda`](http://conda.pydata.org/miniconda.html) on your computer
+2. Create a new `conda` [environment](http://conda.pydata.org/docs/using/envs.html) using this project
+3. Each time you wish to work, activate your `conda` environment
 
-## Recording Data
-I've saved some test data for you in the folder called `test_dataset`.  In that folder you'll find a csv file with the output data for steering, throttle position etc. and the pathnames to the images recorded in each run.  I've also saved a few images in the folder called `calibration_images` to do some of the initial calibration steps with.  
+---
 
-The first step of this project is to record data on your own.  To do this, you should first create a new folder to store the image data in.  Then launch the simulator and choose "Training Mode" then hit "r".  Navigate to the directory you want to store data in, select it, and then drive around collecting data.  Hit "r" again to stop data collection.
+## Installation
 
-## Data Analysis
-Included in the IPython notebook called `Rover_Project_Test_Notebook.ipynb` are the functions from the lesson for performing the various steps of this project.  The notebook should function as is without need for modification at this point.  To see what's in the notebook and execute the code there, start the jupyter notebook server at the command line like this:
+**Download** the version of `miniconda` that matches your system. Make sure you download the version for Python 3.6.1
+
+**NOTE**: There have been reports of issues creating an environment using miniconda `v4.3.13`. If it gives you issues try versions `4.3.11` or `4.2.12` from [here](https://repo.continuum.io/miniconda/).
+
+|        | Linux | Mac | Windows | 
+|--------|-------|-----|---------|
+| 64-bit | [64-bit (bash installer)][lin64] | [64-bit (bash installer)][mac64] | [64-bit (exe installer)][win64]
+| 32-bit | [32-bit (bash installer)][lin32] |  | [32-bit (exe installer)][win32]
+
+[win64]: https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe
+[win32]: https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86.exe
+[mac64]: https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+[lin64]: https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+[lin32]: https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86.sh
+
+**Install** [miniconda](http://conda.pydata.org/miniconda.html) on your machine. Detailed instructions:
+
+- **Linux:** http://conda.pydata.org/docs/install/quick.html#linux-miniconda-install
+- **Mac:** http://conda.pydata.org/docs/install/quick.html#os-x-miniconda-install
+- **Windows:** http://conda.pydata.org/docs/install/quick.html#windows-miniconda-install
+
+**Setup** your the `Sample-Search-And-Retrieve` environment. 
 
 ```sh
-jupyter notebook
+git clone https://github.com/ergoego/Sample-Search-And-Retrieve.git  
+cd RoboND-Python-StarterKit
 ```
 
-This command will bring up a browser window in the current directory where you can navigate to wherever `Rover_Project_Test_Notebook.ipynb` is and select it.  Run the cells in the notebook from top to bottom to see the various data analysis steps.  
+If you are on Windows, **rename**   
+`meta_windows_patch.yml` to   
+`meta.yml`
 
-The last two cells in the notebook are for running the analysis on a folder of test images to create a map of the simulator environment and write the output to a video.  These cells should run as-is and save a video called `test_mapping.mp4` to the `output` folder.  This should give you an idea of how to go about modifying the `process_image()` function to perform mapping on your data.  
+**Create** Sample-Search-And-Retrieve.  Running this command will create a new `conda` environment that is provisioned with all libraries you need to be successful in this program.  
+**NOTE:** if you get an error when you try to run this command that `conda` doesn't exist, try closing and re-opening your terminal window.
+```
+conda env create -f environment.yml
+```
+**NOTE:** If the above command fails due to internet issues or timed out HTTP request then remove the partially built environment using the following command (then run the above `create` command again):
+```
+conda env remove -n Sample-Search-And-Retrieve
+conda env create -f environment.yml 
+```
+**Verify** that the Sample-Search-And-Retrieve environment was created in your environments:
+
+```sh
+conda info --envs
+```
+
+**Cleanup** downloaded libraries (remove tarballs, zip files, etc):
+
+```sh
+conda clean -tp
+```
+## Installing OpenCV
+The Udacity project this is forked from suggests installing miniconda with `python==3.5.1`, and specifying `opencv3` in `environment.yml`, however this was giving me problems that moving to `python==3.6.1` solved. 
+
+However, `opencv3` no longer wanted to work with that version, so the workaround I came up with was to: remove `opencv3` and change to `python==3.6.1`, build the environment, install pip in the environment, and then use pip in the environment to install `opencv-contrib-python` (opencv doesn't mantain a pip package for their library, so the open-source `opencv-python-contrib` is basically a mirror). I'm sure there is a way to have this done automatically when the environment is built and what I have done is by no means optimal. 
+
+So this boils down to:
+
+```
+conda install -n Sample-Search-And-Retrieve pip
+activate Sample-Search-And-Retrieve
+pip install opencv-contrib-python
+```
+## Using Anaconda
+
+Now that you have created an environment, in order to use it, you will need to activate the environment. This must be done **each** time you begin a new working session i.e. open a new terminal window. 
+
+**Activate** the `Sample-Search-And-Retrieve` environment:
+
+### OS X and Linux
+```sh
+$ source activate Sample-Search-And-Retrieve
+```
+### Windows
+Depending on shell either:
+```sh
+$ source activate Sample-Search-And-Retrieve
+```
+or
+
+```sh
+$ activate Sample-Search-And-Retrieve
+```
+
+That's it. Now all of the `Sample-Search-And-Retrieve` libraries are available to you.
+
+To exit the environment when you have completed your work session, simply close the terminal window.
+
+### Uninstalling
+If you ever want to delete or remove an environment 
+
+To **delete/remove** the "Sample-Search-And-Retrieve" environment:
+```
+conda env remove -n Sample-Search-And-Retrieve
+```
+
+## Data Analysis
+Included is the IPython notebook called `Rover_Project_Test_Notebook.ipynb`, which was used for initial prototyping and image analysis. 
 
 ## Navigating Autonomously
-The file called `drive_rover.py` is what you will use to navigate the environment in autonomous mode.  This script calls functions from within `perception.py` and `decision.py`.  The functions defined in the IPython notebook are all included in`perception.py` and it's your job to fill in the function called `perception_step()` with the appropriate processing steps and update the rover map. `decision.py` includes another function called `decision_step()`, which includes an example of a conditional statement you could use to navigate autonomously.  Here you should implement other conditionals to make driving decisions based on the rover's state and the results of the `perception_step()` analysis.
+The file called `drive_rover.py` is what you will use to navigate the environment in autonomous mode.  This script calls functions from within `perception.py` and `decision.py`.  The functions defined in the IPython notebook are all included in`perception.py`. `decision.py` includes another function called `decision_step()`, which uses conditional statements evaluating the rover's state and the results of the `perception_step()` analysis to navigate autonomously. 
 
-`drive_rover.py` should work as is if you have all the required Python packages installed. Call it at the command line like this: 
+Launch the program:
 
 ```sh
 python drive_rover.py
 ```  
 
-Then launch the simulator and choose "Autonomous Mode".  The rover should drive itself now!  It doesn't drive that well yet, but it's your job to make it better!  
-
-**Note: running the simulator with different choices of resolution and graphics quality may produce different results!  Make a note of your simulator settings in your writeup when you submit the project.**
-
-### Project Walkthrough
-If you're struggling to get started on this project, or just want some help getting your code up to the minimum standards for a passing submission, we've recorded a walkthrough of the basic implementation for you but **spoiler alert: this [Project Walkthrough Video](https://www.youtube.com/watch?v=oJA6QHDPdQw) contains a basic solution to the project!**.
-
-
+Then launch the simulator and choose "Autonomous Mode". 
