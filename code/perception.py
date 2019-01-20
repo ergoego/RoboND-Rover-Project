@@ -115,8 +115,8 @@ def perception_step(Rover):
     warped = perspect_transform(Rover.img, source, destination)
 
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
-    sample_thresh = color_thresh(warped, rgb_thresh_lower=(140, 110, 0), rgb_thresh_upper=(250, 210, 100))
     obstacle_thresh = color_thresh(warped, rgb_thresh_lower=(0, 0, 0), rgb_thresh_upper=(160, 160, 160))
+    sample_thresh = color_thresh(warped, rgb_thresh_lower=(140, 110, 0), rgb_thresh_upper=(250, 210, 100))
     path_thresh = color_thresh(warped)
 
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)

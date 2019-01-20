@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 
 
 # This is where you can build a decision tree for determining throttle, brake and steer 
@@ -74,3 +75,51 @@ def decision_step(Rover):
         Rover.send_pickup = True
     
     return Rover
+
+def sample_seen(Rover):
+    
+    # Create a scaled map for plotting and clean up obs/nav pixels a bit
+    if np.max(Rover.worldmap[:,:,2]) > 0:
+        nav_pix = Rover.worldmap[:,:,2] > 0
+        navigable = Rover.worldmap[:,:,2] * (255 / np.mean(Rover.worldmap[nav_pix, 2]))
+    else: 
+        navigable = Rover.worldmap[:,:,2]
+    
+    if np.max(Rover.worldmap[:,:,0]) > 0:
+        obs_pix = Rover.worldmap[:,:,0] > 0
+        obstacle = Rover.worldmap[:,:,0] * (255 / np.mean(Rover.worldmap[obs_pix, 0]))
+    else:
+        obstacle = Rover.worldmap[:,:,0]
+
+    likely_nav = navigable >= obstacle
+    obstacle[likely_nav] = 0
+    plotmap = np.zeros_like(Rover.worldmap)
+    plotmap[:, :, 0] = obstacle
+    plotmap[:, :, 2] = navigable
+    plotmap = plotmap.clip(0, 255)
+
+    # Overlay obstacle and navigable terrain map with ground truth map
+    map_add = cv2.addWeighted(plotmap, 1, Rover.ground_truth, 0.5, 0)
+    # Check whether any rock detections are present in worldmap
+    rock_world_pos = Rover.worldmap[:,:,1].nonzero()
+      # If there are, we'll step through the known sample positions
+      # to confirm whether detections are real 
+    samples_located = 0
+    if rock_world_pos[0].any():
+            
+        rock_size = 2
+        for idx in range(len(Rover.samples_pos[0])):
+            test_rock_x = Rover.samples_pos[0][idx]
+            test_rock_y = Rover.samples_pos[1][idx]
+            rock_sample_dists = np.sqrt((test_rock_x - rock_world_pos[1])**2 + \
+                                        (test_rock_y - rock_world_pos[0])**2)
+            # If rocks were detected within 3 meters of known sample positions
+            # consider it a success and plot the location of the known
+            # sample on the map
+            if np.min(rock_sample_dists) < 3:
+                samples_located += 1
+
+                map_add[test_rock_y-rock_size:test_rock_y+rock_size, 
+                        test_rock_x-rock_size:test_rock_x+rock_size, :] = 255
+
+    return Rover, samples_located, map_add, plotmap
