@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 
-
 # This is where you can build a decision tree for determining throttle, brake and steer 
 # commands based on the output of the perception_step() function
 def decision_step(Rover):
@@ -27,8 +26,11 @@ def decision_step(Rover):
                 else: # Else coast
                     Rover.throttle = 0
                 Rover.brake = 0
-                # Set steering to average angle clipped to the range +/- 15
-                Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
+                if len(Rover.sample_angles) >= 1: #LEFT OFF JUST TRYING TO SWAP OUT STEERING ON THIS CONDITION
+                    # Set steering to average angle clipped to the range +/- 15
+                    Rover.steer = np.clip(np.mean(Rover.sample_angles * 180/np.pi), -15, 15)
+                else:
+                	Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
             # If there's a lack of navigable terrain pixels then go to 'stop' mode
             elif len(Rover.nav_angles) < Rover.stop_forward:
                     # Set mode to "stop" and hit the brakes!
@@ -63,13 +65,7 @@ def decision_step(Rover):
                     # Set steer to mean angle
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
                     Rover.mode = 'forward'
-    # Just to make the rover do something 
-    # even if no modifications have been made to the code
-    else:
-        Rover.throttle = Rover.throttle_set
-        Rover.steer = 0
-        Rover.brake = 0
-        
+
     # If in a state where want to pickup a rock send pickup command
     if Rover.near_sample and Rover.vel == 0 and not Rover.picking_up:
         Rover.send_pickup = True
@@ -115,11 +111,17 @@ def sample_seen(Rover):
                                         (test_rock_y - rock_world_pos[0])**2)
             # If rocks were detected within 3 meters of known sample positions
             # consider it a success and plot the location of the known
-            # sample on the map
+            # sample on the map. 
             if np.min(rock_sample_dists) < 3:
                 samples_located += 1
 
                 map_add[test_rock_y-rock_size:test_rock_y+rock_size, 
                         test_rock_x-rock_size:test_rock_x+rock_size, :] = 255
+                
+                #Store the confirmed location so we can go to it
+                Rover.sample_x_pos = test_rock_x
+                Rover.sample_y_pos = test_rock_y
+                #Go to the sample at the now confirmed location
+                #Rover.mode = 'move to sample'
 
     return Rover, samples_located, map_add, plotmap
